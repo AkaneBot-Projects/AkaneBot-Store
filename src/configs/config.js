@@ -3,7 +3,7 @@ config();
 
 export default {
   owner: ["6285691464024"], // isi
-  pairingNumber: "6285691464024", // isi 
+  pairingNumber: "62895347198105", // isi 
   self: true, 
   autoRead: {
     story: true,
@@ -20,23 +20,21 @@ export default {
   commands: "commands",
   scrapers: "scraper", 
   msg: {
-    owner: "Fitur ini hanya dapat diakses oleh pemilik!",
-    group: "Fitur ini hanya dapat diakses di dalam grup!",
-    private: "Fitur ini hanya dapat diakses di chat pribadi!",
-    admin: "Fitur ini hanya dapat diakses oleh admin grup!",
-    botAdmin: "Bot bukan admin, tidak dapat menggunakan fitur ini!",
-    bot: "Fitur ini hanya dapat diakses oleh bot",
-    premium: "Fitur ini hanya dapat diakses oleh pengguna premium",
-    media: "Balas ke media...",
-    query: "Tidak ada query?",
-    error: "Terjadi kesalahan, silakan ulangi beberapa saat lagi.",
-    quoted: "Balas ke pesan...",
-    wait: "Tunggu sebentar...",
-    urlInvalid: "URL tidak valid",
-    notFound: "Hasil tidak ditemukan!",
-    register:
-      "Silakan lakukan pendaftaran terlebih dahulu untuk menggunakan fitur ini.",
-    limit:
-      "Limit kamu sudah habis, silahkan ketik .claim atau membeli premium.",
+    owner: "✧˚ ༘ ⋆｡˚ Hanya owner yang bisa akses fitur ini! ˚♡ ⋆｡˚ ✧",
+    group: "✿°•∘ Fitur ini hanya untuk grup! ∘•°✿",
+    private: "💌✧˚・ Fitur khusus chat pribadi saja! ・˚✧💌",
+    admin: "👑✨ Khusus admin grup saja ya! ✨👑",
+    botAdmin: "🌸 Bot belum jadi admin, tidak bisa menggunakan fitur ini! 🌸",
+    bot: "🤖💕 Fitur ini hanya untuk bot saja",
+    premium: "✧*。ヾ(｡>﹏<｡)ﾉﾞ✧*。 Fitur premium! Upgrade dulu ya~ ✧*。ヾ(｡>﹏<｡)ﾉﾞ✧*。",
+    media: "📱✿ Reply ke media dulu ya! ✿📱",
+    query: "❓🎀 Query-nya mana? 🎀❓",
+    error: "ｏ(╥﹏╥)ｏ Terjadi kesalahan! Coba lagi nanti ya~ ｏ(╥﹏╥)ｏ",
+    quoted: "💬✧˚ Reply ke pesan dulu ya! ˚✧💬",
+    wait: "⋆⭒ Tunggu sebentar... ⭒⋆ \n┈┈┈┈┈┈┈┈┈┈┈┈\n(づ ◕‿◕ )づ loading...",
+    urlInvalid: "✘✿ URL tidak valid! Coba URL yang lain ya~ ✿✘",
+    notFound: "┏━━✦❘༻ 404 ༺❘✦━━┓\n  Hasil tidak ditemukan!  \n┗━━✦❘༻ 404 ༺❘✦━━┛",
+    register: "✧･ﾟ: *✧･ﾟ:* Silakan daftar dulu ya! Ketik .register *:･ﾟ✧*:･ﾟ✧",
+    limit: "⊹˚₊ Limit kamu habis! (っ °Д °;)っ \n⊹˚₊ Ketik .claim atau beli premium ya~ ₊˚⊹",
   },
 };

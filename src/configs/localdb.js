@@ -66,6 +66,8 @@ const getDefaultSettings = () => ({
   logo: "",
   developer: "Arifzyn.",
   packname: "YouTube : @arifzxa19",
+  botname: "Arifzyn",
+  prefix: ".", // default prefix
   api: {},
   limit: {
     free: 10,
@@ -88,6 +90,7 @@ const getDefaultBot = () => ({
   rating: {},
   menfess: {},
   anonymous: {},
+  store: [],
 });
 
 /**

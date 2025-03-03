@@ -466,7 +466,7 @@ export default new (class Function {
       let form = new FormData();
       form.append("file", media, `file-${Date.now()}.${mime.ext}`);
       axios
-        .post("https://cdn.arifzyn.tech/api/upload", form, {
+        .post("https://cdn.arifzyn.site/api/upload", form, {
           headers: {
             "User-Agent":
               "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0",
