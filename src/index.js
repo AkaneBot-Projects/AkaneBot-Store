@@ -20,6 +20,9 @@ const pairingCode = config.pairingNumber;
 const pathContacts = `./${config.session}/contacts.json`;
 const pathMetadata = `./${config.session}/groupMetadata.json`;
 
+// Untuk melacak kapan terakhir kali database ditulis
+let lastDatabaseWrite = new Date();
+
 async function WAStart() {
   process.on("uncaughtException", console.error);
   process.on("unhandledRejection", console.error);
@@ -91,10 +94,27 @@ async function WAStart() {
     if (config.writeStore) {
       store.writeToFile(`./${config.session}/store.json`);
     }
+    
+    const now = new Date();
+    const daysSinceLastWrite = (now - lastDatabaseWrite) / (1000 * 60 * 60 * 24);
+    
+    if (daysSinceLastWrite >= 1) {
+      if (global.db) {
+        client.logger.info("Melakukan penyimpanan database harian...");
+        await database.write(global.db);
+        lastDatabaseWrite = now;
+        client.logger.info("Database berhasil disimpan.");
+      }
+    }
+  }, 30 * 1000);
+  
+  process.on('SIGINT', async () => {
+    client.logger.info("Aplikasi akan ditutup, menyimpan database...");
     if (global.db) {
       await database.write(global.db);
     }
-  }, 30 * 1000);
+    process.exit(0);
+  });
 }
 
 WAStart();
