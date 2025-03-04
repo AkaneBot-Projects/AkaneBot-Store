@@ -2,13 +2,14 @@
  * ✨🌸 Kawaii Shop Store Plugin for WhatsApp Bot 🌸✨
  * Handles shop store listings with cute formatting, image support, and order status
  */
+ 
+import moment from 'moment-timezone'; 
 
 export default {
     name: ["addlist", "dellist", "updatelist", "list", "proses", "done"],
     cmd: ["addlist", "dellist", "updatelist", "list", "proses", "done"],
     category: "store",
     isOwner: false,
-    isAdmin: true,
     isGroup: true,
     
     before: async function(m) {
@@ -29,13 +30,13 @@ export default {
           statusBadge = "✅ *[SELESAI]* ✅";
         }
         
-        let replyText = `*・₊˚✧ Item Found! ✧˚₊・*
-  ${statusBadge ? "\n" + statusBadge + "\n" : ""}  
-  ╭── ♡ ⋆｡°✩ ──╮
-   ${matchedItem.content}
-  ╰── ♡ ⋆｡°✩ ──╯
+        const createdAtFormatted = moment(matchedItem.createdAt)
+        .tz("Asia/Jakarta")
+        .format("dddd, YYYY-MM-DD"); 
+    
+        let replyText = `${matchedItem.content}
   
-  ᵗʰᵃⁿᵏ ʸᵒᵘ ᶠᵒʳ ˢʰᵒᵖᵖⁱⁿᵍ ᵏᵉᵉᵖ ˢᵐⁱˡⁱⁿᵍ!`;
+  ᵗʰᵃⁿᵏ ʸᵒᵘ ᶠᵒʳ ˢʰᵒᵖᵖⁱⁿᵍ ᵏᵉᵉᵖ ˢᵐⁱˡⁱⁿᵍ!`.trim();
         
         // If there's an image, send it with the caption
         if (matchedItem.imageUrl) {
@@ -61,6 +62,7 @@ export default {
      
       switch (command) {
         case "addlist":
+          if (!m.isAdmin) return m.reply("admin")
           if (!text.includes("@")) {
             return m.reply("❀ *Format Error* ❀\n\n❥ Format yang benar: /addlist key@content\n❥ Untuk menambah gambar, reply ke gambar");
           }
@@ -112,6 +114,7 @@ export default {
           break;
           
         case "dellist":
+          if (!m.isAdmin) return m.reply("admin")
           if (!args[0]) {
             return m.reply("❀ *Format Error* ❀\n\n❥ Format yang benar: /dellist key");
           }
@@ -131,6 +134,7 @@ export default {
           break;
           
         case "updatelist":
+          if (!m.isAdmin) return m.reply("admin")
           if (!text.includes("@")) {
             return m.reply("❀ *Format Error* ❀\n\n❥ Format yang benar: /updatelist key@newcontent\n❥ Untuk menambah/update gambar, reply ke gambar");
           }
@@ -176,6 +180,7 @@ export default {
           break;
           
         case "proses":
+          if (!m.isAdmin) return m.reply("admin")
           if (!args[0]) {
             return m.reply("❀ *Format Error* ❀\n\n❥ Format yang benar: /proses key (alasan opsional)");
           }
@@ -221,6 +226,7 @@ export default {
           break;
           
         case "done":
+          if (!m.isAdmin) return m.reply("admin")
           if (!args[0]) {
             return m.reply("❀ *Format Error* ❀\n\n❥ Format yang benar: /done key (catatan opsional)");
           }
@@ -283,21 +289,29 @@ export default {
           
           const shopName = await client.getName(groupId);
           
-          const listText = `
-  ╭・・┈┈┈┈┈┈ ♡ ┈┈┈┈┈┈・・╮
-   *✧･ﾟ: *✧･ﾟ ${shopName} ･ﾟ✧*:･ﾟ✧*
-  ╰・・┈┈┈┈┈┈ ♡ ┈┈┈┈┈┈・・╯
+moment.locale("id"); 
+
+const currentDate = moment().tz("Asia/Jakarta").format("dddd, DD MMMM YYYY");
+const user = m.sender.split("@")[0]; 
+
+const listText = `
+╭・・┈┈┈┈┈┈ ♡ ┈┈┈┈┈┈・・╮
+   *✧･ﾟ ${shopName} ･ﾟ✧*
+╰・・┈┈┈┈┈┈ ♡ ┈┈┈┈┈┈・・╯
   
-  ✧･ﾟ: *✧ CATALOG ✧*:･ﾟ✧
-  ${listItems}
-  
-  ⋆｡°✩ Ketik nama item untuk melihat detail! ✩°｡⋆
-  🖼️ = Item dengan gambar
-  ⏳ = Sedang diproses
-  ✅ = Selesai
-  `;
+📅 *Tanggal:* ${currentDate}
+halo ka @${user}
+ini list yang ada di grup ini
+
+✧･ﾟ: *✧ CATALOG ✧*:･ﾟ✧
+${listItems}   
+
+${global.db.settings.botname || "AkaneShop"}
+`;
           
-          m.reply(listText);
+          m.reply(listText.trim(), {
+          	mentions: [m.sender] 
+          });
           break;
       }
     }

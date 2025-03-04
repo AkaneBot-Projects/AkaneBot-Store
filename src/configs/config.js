@@ -2,8 +2,8 @@ import { config } from "dotenv";
 config();
 
 export default {
-  owner: ["6285691464024"], // isi
-  pairingNumber: "62895347198105", // isi 
+  owner: ["6285888362486", "6285691464024"], // isi
+  pairingNumber: "628195107972", // isi 
   self: true, 
   autoRead: {
     story: true,

@@ -3,11 +3,6 @@ export default {
   name: "tiktok",
   category: "downloader",
   description: "Download video dari TikTok (dengan atau tanpa watermark)",
-  usages: [
-    ["tiktok <url>", "Download tanpa watermark"],
-    ["tiktokwm <url>", "Download dengan watermark"],
-  ],
-  limit: true,
   execute: async (m, { client, API, Func }) => {
     if (!m.text) {
       throw {
