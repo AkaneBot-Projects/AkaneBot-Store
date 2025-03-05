@@ -16,7 +16,7 @@
   "author": "Arifzyn19",
   "license": "MIT",
   "dependencies": {
-    "@arifzyn/api": "^1.0.5",
+    "@arifzyn/api": "^2.0.3",
     "@hapi/boom": "latest",
     "@whiskeysockets/baileys": "latest",
     "cheerio": "^1.0.0",

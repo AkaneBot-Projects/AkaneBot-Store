@@ -1,10 +1,10 @@
 export default {
   cmd: ["ytmp3", "ytmp4"],
   name: ["ytmp3", "ytmp4"],
-  cetegory: "downloader",
-  description: "Download video/audio dari YouTube",
-  execute: async (m, { client, API, Func }) => {
-    if (!m.text)
+  category: "downloader",
+  description: "Download video/audio dari YouTube dengan pilihan format",
+  execute: async (m, { client, Func }) => {
+    if (!m.text) {
       return m.reply(
         Func.example(
           m.prefix,
@@ -12,49 +12,61 @@ export default {
           "https://youtube.com/watch?v=KXQehM6GzYI",
         ),
       );
-    const url = m.text;
-    if (!Func.isUrl(url)) {
-      return m.reply("[!] Silakan masukkan URL video/audio YouTube.");
+    }
+
+    if (!Func.isUrl(m.text)) {
+      return m.reply("[!] Silakan masukkan URL YouTube yang valid.");
     }
 
     await m.react("🕒");
 
     try {
-      const isAudio = m.command === "ytmp3";
-      const type = isAudio ? "audio" : "video";
-      const quality = isAudio ? "128kbps" : "720"; // Sesuaikan kualitas jika diperlukan
-
-      const result = await API.call("/download/youtube", {
-        url,
-        type,
-        quality,
+      // Convert request body to URL parameters
+      const params = new URLSearchParams({
+        url: m.text,
+        type: m.command === "ytmp3" ? "audio" : "video",
+        quality: m.command === "ytmp3" ? "128" : "480",
       });
 
-      if (!result || !result.result) {
-        return m.reply(
-          "Gagal mendapatkan data dari URL YouTube. Silakan coba lagi.",
-        );
-      }
-
-      const { title, url: downloadUrl } = result.result;
-      const sanitizedTitle = title.replace(/[\\/:*?"<>|]/g, ""); // Hapus karakter ilegal dari nama file
-      const extension = isAudio ? "mp3" : "mp4";
-      const filename = `${sanitizedTitle}.${extension}`;
-
-      if (!downloadUrl) {
-        return m.reply("Gagal mendapatkan URL download. Silakan coba lagi.");
-      }
-
-      await m.reply(`Mengunduh ${isAudio ? "audio" : "video"}: ${title}`);
-      await client.sendMedia(m.chat, downloadUrl, m, {
-        mimetype: isAudio ? "audio/mpeg" : "video/mp4",
-        fileName: filename,
-      });
-    } catch (error) {
-      console.error("Error downloading YouTube content:", error);
-      m.reply(
-        "Terjadi kesalahan saat mencoba mengunduh konten. Silakan coba lagi.",
+      const response = await fetch(
+        `https://api.arifzyn.site/download/youtube?${params.toString()}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
       );
+
+      const data = await response.json();
+
+      if (!data.status === 200 || !data.result) {
+        throw new Error("Gagal mendapatkan informasi video.");
+      }
+
+      const downloadUrl = data.result.url;
+      const title = data.result.title;
+
+      const fileResponse = await fetch(downloadUrl);
+      const fileBuffer = await fileResponse.arrayBuffer();
+
+      const isAudio = m.command === "ytmp3";
+      const extension = isAudio ? "mp3" : "mp4";
+      const filename = `${title}.${extension}`;
+
+      await client.sendMedia(
+        m.chat,
+        Buffer.from(fileBuffer),
+        m,
+        {
+          mimetype: isAudio ? "audio/mpeg" : "video/mp4",
+          fileName: filename,
+        },
+        { quoted: m },
+      );
+    } catch (error) {
+      console.error("Error:", error);
+      m.reply("Terjadi kesalahan saat mengunduh. Silakan coba lagi nanti.");
     }
   },
 };

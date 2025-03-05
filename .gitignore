@@ -15,6 +15,7 @@ weights/
 
 # Ignore session data
 session/
+.session/
 
 # Ignore logs
 logs/
@@ -47,4 +48,4 @@ coverage/
 # Ignore debug or error reports
 *.pid
 *.seed
-*.stackdump
+*.stackdump.session/

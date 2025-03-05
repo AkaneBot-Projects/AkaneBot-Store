@@ -21,7 +21,7 @@ export default {
     try {
       await m.reply("⏳ Sedang memproses, mohon tunggu...");
 
-      const response = await API.call("/download/tiktok", {
+      const response = await API.get("/download/tiktok", {
         url: url,
       });
 

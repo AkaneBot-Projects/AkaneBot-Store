@@ -4,7 +4,7 @@ config();
 export default {
   owner: ["6285888362486", "6285691464024"], // isi
   pairingNumber: "628195107972", // isi 
-  self: true, 
+  self: false, 
   autoRead: {
     story: true,
     storyEmoji: true,
