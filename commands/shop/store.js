@@ -280,13 +280,15 @@ export default {
             return m.reply("❀ *Empty Shop* ❀\n\n❥ Belum ada item yang tersimpan di toko ini (⋟﹏⋞)");
           }
           
-          const listItems = groupItems.map((item) => {
-            const hasImage = item.imageUrl ? "🖼️ " : "";
-            const statusIcon = item.status === "processing" ? "⏳ " : 
-                               item.status === "done" ? "✅ " : "";
-            return `   ✿ ${hasImage}${statusIcon}${item.key}`;
-          }).join("\n");
-          
+          const listItems = groupItems
+  .sort((a, b) => a.key.localeCompare(b.key)) // Urutkan berdasarkan key secara alfabetis
+  .map((item) => {
+    const statusIcon = item.status === "processing" ? "⏳ " : 
+                       item.status === "done" ? "✅ " : "";
+    return `   ✿ ${statusIcon}${item.key}`;
+  })
+  .join("\n");
+  
           const shopName = await client.getName(groupId);
           
 moment.locale("id"); 
