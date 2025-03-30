@@ -14,8 +14,8 @@ export default {
 
       let exif = {
         packName: "Create By",
-        packPublish: db.settings.develover,
-      };
+        packPublish: "Fairy Bot"
+      }; 
 
       if (m.text) {
         let [packname, author] = m.text.split("|");

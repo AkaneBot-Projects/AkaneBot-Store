@@ -119,7 +119,7 @@ export default {
             return m.reply("❀ *Format Error* ❀\n\n❥ Format yang benar: /dellist key");
           }
           
-          const keyToDelete = args[0].toLowerCase();
+          const keyToDelete = m.text.toLowerCase();
           const initialLength = global.db.bots.store.length;
           
           global.db.bots.store = global.db.bots.store.filter(

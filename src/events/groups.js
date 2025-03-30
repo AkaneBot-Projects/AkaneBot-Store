@@ -1,18 +1,7 @@
 import baileys from "@whiskeysockets/baileys";
 const { jidNormalizedUser } = baileys;
 export default (client, store) => {
-  // Group update handler
-  client.ev.on("groups.update", (updates) => {
-    for (const update of updates) {
-      const id = update.id;
-      if (store.groupMetadata[id]) {
-        store.groupMetadata[id] = {
-          ...(store.groupMetadata[id] || {}),
-          ...(update || {}),
-        };
-      }
-    }
-  });
+  
   // Participants update handler
   client.ev.on("group-participants.update", ({ id, participants, action }) => {
     const metadata = store.groupMetadata[id];

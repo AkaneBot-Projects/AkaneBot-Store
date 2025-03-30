@@ -100,9 +100,4 @@ export default {
   description: "View or change bot settings",
   isOwner: true,
   execute: handler,
-  usages: [
-    ["setting", "View all settings"],
-    ["setting <type>", "View specific setting"],
-    ["setting <type> <value>", "Change setting value"],
-  ],
 };
