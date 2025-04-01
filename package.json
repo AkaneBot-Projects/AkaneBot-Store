@@ -20,6 +20,7 @@
     "@hapi/boom": "latest",
     "@whiskeysockets/baileys": "latest",
     "cheerio": "^1.0.0",
+    "discord-welcome-card": "^4.9.3",
     "dotenv": "^16.4.5",
     "file-type": "^19.6.0",
     "fluent-ffmpeg": "^2.1.3",
