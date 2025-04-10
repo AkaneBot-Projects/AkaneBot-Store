@@ -1,9 +1,25 @@
 /**
  * ✨🌸 Kawaii Shop Store Plugin for WhatsApp Bot 🌸✨
- * Handles shop store listings with cute formatting, image support, and order status
+ * Handles shop store listings with cute formatting and image support
  */
  
 import moment from 'moment-timezone'; 
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { 
+  addResponList, 
+  delResponList, 
+  isAlreadyResponList, 
+  isAlreadyResponListGroup, 
+  sendResponList, 
+  updateResponList, 
+  getDataResponList 
+} from "../../src/lib/liststore.js";
+
+// Initialize database
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export default {
     name: ["addlist", "dellist", "updatelist", "list", "proses", "done"],
@@ -15,32 +31,23 @@ export default {
     before: async function(m) {
       if (!m.isGroup || m.isCommand) return false;
       
-      if (!global.db.bots.store) {
-        global.db.bots.store = [];
-      }
-      
-      const storeItems = global.db.bots.store.filter(item => item.groupId === m.chat);
-      const matchedItem = storeItems.find(item => item.key.toLowerCase() === m.body.toLowerCase());
-      
-      if (matchedItem) {
+      const db_store = global.db.bots.store
+      const listData = getDataResponList(m.chat, m.body, db_store);
+       
+      if (listData) {
         let statusBadge = "";
-        if (matchedItem.status === "processing") {
+        if (listData.status === "processing") {
           statusBadge = "⏳ *[SEDANG DIPROSES]* ⏳";
-        } else if (matchedItem.status === "done") {
+        } else if (listData.status === "done") {
           statusBadge = "✅ *[SELESAI]* ✅";
         }
         
-        const createdAtFormatted = moment(matchedItem.createdAt)
-        .tz("Asia/Jakarta")
-        .format("dddd, YYYY-MM-DD"); 
-    
-        let replyText = `${matchedItem.content}
+        const replyText = `${listData.response}
   
   ᵗʰᵃⁿᵏ ʸᵒᵘ ᶠᵒʳ ˢʰᵒᵖᵖⁱⁿᵍ ᵏᵉᵉᵖ ˢᵐⁱˡⁱⁿᵍ!`.trim();
-        
-        // If there's an image, send it with the caption
-        if (matchedItem.imageUrl) {
-          await m.reply(matchedItem.imageUrl, { caption: replyText });
+  
+        if (listData.isImage && listData.image_url !== '-') {
+          await m.reply(listData.image_url, { caption: replyText });
         } else {
           await m.reply(replyText);
         }
@@ -52,10 +59,7 @@ export default {
     },
     
     execute: async function(m, { args, command, text, client, Func }) {
-      if (!global.db.bots.store) {
-        global.db.bots.store = [];
-      }
-      
+      const db_store = global.db.bots.store
       const q = m.quoted ? m.quoted : m;
       const groupId = m.chat;
       const hasMedia = q.type?.includes('image') || q.type?.includes('video');
@@ -73,40 +77,29 @@ export default {
             return m.reply("❀ *Format Error* ❀\n\n❥ Format yang benar: /addlist key@content\n❥ Untuk menambah gambar, reply ke gambar");
           }
           
-          const existingItem = global.db.bots.store.find(
-            item => item.groupId === groupId && item.key.toLowerCase() === key.toLowerCase()
-          );
-          
-          if (existingItem) {
-            return m.reply(`❀ *Oopsie!* ❀\n\n❥ List dengan key "${key}" sudah ada!\n❥ Gunakan /updatelist untuk mengubah`);
+          if (isAlreadyResponList(groupId, key.trim(), db_store)) {
+            return m.reply(`❀ *Oopsie!* ❀\n\n❥ List dengan key "${key.trim()}" sudah ada!\n❥ Gunakan /updatelist untuk mengubah`);
           }
           
-          // Initialize item data
-          const newItem = {
-            groupId,
-            key: key.trim(),
-            content: content.trim(),
-            createdBy: m.sender,
-            createdAt: new Date().toISOString()
-          };
-          
           // If there's an attached media, upload it
+          let imageUrl = '-';
           if (hasMedia) {
             m.reply(`❥ Uploading image... please wait! ⋆｡°✩`);
             
             try {
               let media = await q.download();
               let { data } = await Func.upload.arcdn(media);
-              newItem.imageUrl = data.url;
+              imageUrl = data.url;
             } catch (error) {
               return m.reply(`❥ Failed to upload image: ${error.message}`);
             }
           }
           
-          global.db.bots.store.push(newItem);
+          // Add to database
+          addResponList(groupId, key.trim(), content.trim(), hasMedia, imageUrl, db_store);
           
-          let successMsg = `❀ *Yay! Success* ❀\n\n❥ Item baru ditambahkan!\n❥ Key: ${key} ✓`;
-          if (newItem.imageUrl) {
+          let successMsg = `❀ *Yay! Success* ❀\n\n❥ Item baru ditambahkan!\n❥ Key: ${key.trim()} ✓`;
+          if (hasMedia) {
             successMsg += `\n❥ With Image: ✓`;
           }
       
@@ -119,16 +112,13 @@ export default {
             return m.reply("❀ *Format Error* ❀\n\n❥ Format yang benar: /dellist key");
           }
           
-          const keyToDelete = m.text.toLowerCase();
-          const initialLength = global.db.bots.store.length;
+          const keyToDelete = args[0];
           
-          global.db.bots.store = global.db.bots.store.filter(
-            item => !(item.groupId === groupId && item.key.toLowerCase() === keyToDelete)
-          );
-          
-          if (global.db.bots.store.length === initialLength) {
+          if (!isAlreadyResponList(groupId, keyToDelete, db_store)) {
             return m.reply(`❀ *Not Found* ❀\n\n❥ List dengan key "${args[0]}" tidak ditemukan`);
           }
+          
+          delResponList(groupId, keyToDelete, db_store);
           
           m.reply(`❀ *Deleted!* ❀\n\n❥ Item dengan key: ${args[0]} berhasil dihapus`);
           break;
@@ -145,36 +135,33 @@ export default {
             return m.reply("❀ *Format Error* ❀\n\n❥ Format yang benar: /updatelist key@newcontent\n❥ Untuk menambah/update gambar, reply ke gambar");
           }
           
-          const itemIndex = global.db.bots.store.findIndex(
-            item => item.groupId === groupId && item.key.toLowerCase() === keyToUpdate.toLowerCase()
-          );
+          const existingItem = getDataResponList(groupId, keyToUpdate.trim(), db_store);
           
-          if (itemIndex === -1) {
-            return m.reply(`❀ *Not Found* ❀\n\n❥ List dengan key "${keyToUpdate}" tidak ditemukan`);
+          if (!existingItem) {
+            return m.reply(`❀ *Not Found* ❀\n\n❥ List dengan key "${keyToUpdate.trim()}" tidak ditemukan`);
           }
           
-          global.db.bots.store[itemIndex].content = newContent.trim();
-          global.db.bots.store[itemIndex].updatedBy = m.sender;
-          global.db.bots.store[itemIndex].updatedAt = new Date().toISOString();
-          
           // If there's an attached media, upload it
+          let newImageUrl = existingItem.image_url;
           if (hasMedia) {
             m.reply(`❀ *Processing* ❀\n\n❥ Uploading image... please wait! ⋆｡°✩`);
             
             try {
               let media = await q.download();
               let { data } = await Func.upload.arcdn(media);
-              global.db.bots.store[itemIndex].imageUrl = data.url;
+              newImageUrl = data.url;
             } catch (error) {
               return m.reply(`❀ *Upload Error* ❀\n\n❥ Failed to upload image: ${error.message}`);
             }
           }
           
-          let updateMsg = `❀ *Updated!* ❀\n\n❥ Item dengan key: ${keyToUpdate} berhasil diperbarui`;
+          // Update the item
+          updateResponList(groupId, keyToUpdate.trim(), newContent.trim(), hasMedia || existingItem.isImage, newImageUrl, db_store);
+          
+          let updateMsg = `❀ *Updated!* ❀\n\n❥ Item dengan key: ${keyToUpdate.trim()} berhasil diperbarui`;
           if (hasMedia) {
             updateMsg += `\n❥ Image juga diperbarui ✓`;
           }
-          updateMsg += ``;
           
           m.reply(updateMsg);
           break;
@@ -185,41 +172,43 @@ export default {
             return m.reply("❀ *Format Error* ❀\n\n❥ Format yang benar: /proses key (alasan opsional)");
           }
           
-          const keyToProcess = args[0].toLowerCase();
-          const processIndex = global.db.bots.store.findIndex(
-            item => item.groupId === groupId && item.key.toLowerCase() === keyToProcess
-          );
+          const keyToProcess = args[0];
+          const existingProcessItem = getDataResponList(groupId, keyToProcess, db_store);
           
-          if (processIndex === -1) {
+          if (!existingProcessItem) {
             return m.reply(`❀ *Not Found* ❀\n\n❥ List dengan key "${args[0]}" tidak ditemukan`);
           }
           
           // Get reason if provided (everything after the key)
           const processReason = args.slice(1).join(" ") || "Pesanan sedang diproses";
           
-          // Update status
-          global.db.bots.store[processIndex].status = "processing";
-          global.db.bots.store[processIndex].statusReason = processReason;
-          global.db.bots.store[processIndex].statusBy = m.sender;
-          global.db.bots.store[processIndex].statusAt = new Date().toISOString();
+          // Update the item
+          updateResponList(
+            groupId, 
+            keyToProcess, 
+            existingProcessItem.response, 
+            existingProcessItem.isImage, 
+            existingProcessItem.image_url, 
+            db_store,
+            "processing"  // Add status as parameter to updateResponList
+          );
           
           // Create a message to send to the group
-          const item = global.db.bots.store[processIndex];
           const userName = m.pushName || "Admin"; // Use pushName if available
           
           let processingMessage = `
-  ⏳ *STATUS DIUBAH KE PROSES* ⏳
-  
-  ╭── ♡ ⋆｡°✩ ──╮
-   *Order:* ${item.key}
-   *Status:* Sedang Diproses
-   *Note:* ${processReason}
-   *Oleh:* ${userName}
-  ╰── ♡ ⋆｡°✩ ──╯`;
-  
+⏳ *STATUS DIUBAH KE PROSES* ⏳
+
+╭── ♡ ⋆｡°✩ ──╮
+ *Order:* ${keyToProcess}
+ *Status:* Sedang Diproses
+ *Note:* ${processReason}
+ *Oleh:* ${userName}
+╰── ♡ ⋆｡°✩ ──╯`;
+
           // If the item has an image, send with the image
-          if (item.imageUrl) {
-            await m.reply({ image: { url: item.imageUrl }, caption: processingMessage });
+          if (existingProcessItem.isImage && existingProcessItem.image_url !== '-') {
+            await m.reply({ image: { url: existingProcessItem.image_url }, caption: processingMessage });
           } else {
             await m.reply(processingMessage);
           }
@@ -231,72 +220,84 @@ export default {
             return m.reply("❀ *Format Error* ❀\n\n❥ Format yang benar: /done key (catatan opsional)");
           }
           
-          const keyToDone = args[0].toLowerCase();
-          const doneIndex = global.db.bots.store.findIndex(
-            item => item.groupId === groupId && item.key.toLowerCase() === keyToDone
-          );
+          const keyToDone = args[0];
+          const existingDoneItem = getDataResponList(groupId, keyToDone, db_store);
           
-          if (doneIndex === -1) {
+          if (!existingDoneItem) {
             return m.reply(`❀ *Not Found* ❀\n\n❥ List dengan key "${args[0]}" tidak ditemukan`);
           }
           
           // Get note if provided (everything after the key)
           const doneNote = args.slice(1).join(" ") || "Pesanan telah selesai";
           
-          // Update status
-          global.db.bots.store[doneIndex].status = "done";
-          global.db.bots.store[doneIndex].statusReason = doneNote;
-          global.db.bots.store[doneIndex].statusBy = m.sender;
-          global.db.bots.store[doneIndex].statusAt = new Date().toISOString();
+          // Update the item
+          updateResponList(
+            groupId, 
+            keyToDone, 
+            existingDoneItem.response, 
+            existingDoneItem.isImage, 
+            existingDoneItem.image_url, 
+            db_store,
+            "done"  // Add status as parameter to updateResponList
+          );
           
           // Create a message to send to the group
-          const doneItem = global.db.bots.store[doneIndex];
           const doneUserName = m.pushName || "Admin"; // Use pushName if available
           
           let doneMessage = `
-  ✅ *STATUS DIUBAH KE SELESAI* ✅
-  
-  ╭── ♡ ⋆｡°✩ ──╮
-   *Order:* ${doneItem.key}
-   *Status:* Selesai
-   *Note:* ${doneNote}
-   *Oleh:* ${doneUserName}
-  ╰── ♡ ⋆｡°✩ ──╯
-  
-  ᵀᵉʳⁱᵐᵃᵏᵃˢⁱʰ ᵗᵉˡᵃʰ ᵇᵉʳᵇᵉˡᵃⁿʲᵃ! ˢⁱˡᵃʰᵏᵃⁿ ᵈᵃᵗᵃⁿᵍ ᵏᵉᵐᵇᵃˡⁱ ❤️`;
-  
+✅ *STATUS DIUBAH KE SELESAI* ✅
+
+╭── ♡ ⋆｡°✩ ──╮
+ *Order:* ${keyToDone}
+ *Status:* Selesai
+ *Note:* ${doneNote}
+ *Oleh:* ${doneUserName}
+╰── ♡ ⋆｡°✩ ──╯
+
+ᵀᵉʳⁱᵐᵃᵏᵃˢⁱʰ ᵗᵉˡᵃʰ ᵇᵉʳᵇᵉˡᵃⁿʲᵃ! ˢⁱˡᵃʰᵏᵃⁿ ᵈᵃᵗᵃⁿᵍ ᵏᵉᵐᵇᵃˡⁱ ❤️`;
+
           // If the item has an image, send with the image
-          if (doneItem.imageUrl) {
-            await m.reply({ image: { url: doneItem.imageUrl }, caption: doneMessage });
+          if (existingDoneItem.isImage && existingDoneItem.image_url !== '-') {
+            await m.reply({ image: { url: existingDoneItem.image_url }, caption: doneMessage });
           } else {
             await m.reply(doneMessage);
           }
           break;
           
         case "list":
-          const groupItems = global.db.bots.store.filter(item => item.groupId === groupId);
+          // Get all items for this group
+          const groupItems = db_store.filter(item => item.id === groupId);
           
           if (groupItems.length === 0) {
             return m.reply("❀ *Empty Shop* ❀\n\n❥ Belum ada item yang tersimpan di toko ini (⋟﹏⋞)");
           }
           
-          const listItems = groupItems
-  .sort((a, b) => a.key.localeCompare(b.key)) // Urutkan berdasarkan key secara alfabetis
-  .map((item) => {
-    const statusIcon = item.status === "processing" ? "⏳ " : 
-                       item.status === "done" ? "✅ " : "";
-    return `   ✿ ${statusIcon}${item.key}`;
-  })
-  .join("\n");
-  
+          // Generate plain list (no categories)
+          let listItemsText = "";
+          
+          // Sort items alphabetically
+          const sortedItems = groupItems.sort((a, b) => a.key.localeCompare(b.key));
+          
+          // Add header
+          listItemsText += `\n┌─ *DAFTAR ITEM* ─┐\n`;
+          
+          // Add each item
+          sortedItems.forEach(item => {
+            const statusIcon = item.status === "processing" ? "⏳ " : 
+                             item.status === "done" ? "✅ " : "";
+            listItemsText += `│ ✿ ${statusIcon}${item.key}\n`;
+          });
+          
+          listItemsText += `└───────────────┘\n`;
+          
           const shopName = await client.getName(groupId);
           
-moment.locale("id"); 
-
-const currentDate = moment().tz("Asia/Jakarta").format("dddd, DD MMMM YYYY");
-const user = m.sender.split("@")[0]; 
-
-const listText = `
+          moment.locale("id"); 
+          
+          const currentDate = moment().tz("Asia/Jakarta").format("dddd, DD MMMM YYYY");
+          const user = m.sender.split("@")[0]; 
+          
+          const listText = `
 ╭・・┈┈┈┈┈┈ ♡ ┈┈┈┈┈┈・・╮
    *✧･ﾟ ${shopName} ･ﾟ✧*
 ╰・・┈┈┈┈┈┈ ♡ ┈┈┈┈┈┈・・╯
@@ -306,13 +307,13 @@ halo ka @${user}
 ini list yang ada di grup ini
 
 ✧･ﾟ: *✧ CATALOG ✧*:･ﾟ✧
-${listItems}   
+${listItemsText}   
 
 ${global.db.settings.botname || "AkaneShop"}
 `;
           
           m.reply(listText.trim(), {
-          	mentions: [m.sender] 
+            mentions: [m.sender] 
           });
           break;
       }
