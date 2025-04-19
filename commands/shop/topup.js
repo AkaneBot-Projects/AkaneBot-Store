@@ -1,6 +1,6 @@
 import TopupInyukAPI from "../../src/scraper/topupinyuk.js";
 
-const API_KEY = process.env.TOPUPINYUK_API_KEY || 'API4JQRDD1720650075999';
+const API_KEY = process.env.TOPUPINYUK_API_KEY 
 const topupinyuk = new TopupInyukAPI(API_KEY);
 
 export default {
