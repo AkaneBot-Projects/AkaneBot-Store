@@ -3,8 +3,8 @@ config();
 
 export default {
   owner: ["6285888362486", "6285691464024"], // isi
-  pairingNumber: "628195107972", // isi 
-  self: false, 
+  pairingNumber: "628195107972", // isi
+  self: false,
   autoRead: {
     story: true,
     storyEmoji: true,
@@ -18,7 +18,7 @@ export default {
   database: process.env.DATABASE || "database.json",
   mongoURi: process.env.MONGO_URi || "",
   commands: "commands",
-  scrapers: "scraper", 
+  scrapers: "scraper",
   msg: {
     owner: "✧˚ ༘ ⋆｡˚ Hanya owner yang bisa akses fitur ini! ˚♡ ⋆｡˚ ✧",
     group: "✿°•∘ Fitur ini hanya untuk grup! ∘•°✿",
@@ -26,15 +26,18 @@ export default {
     admin: "👑✨ Khusus admin grup saja ya! ✨👑",
     botAdmin: "🌸 Bot belum jadi admin, tidak bisa menggunakan fitur ini! 🌸",
     bot: "🤖💕 Fitur ini hanya untuk bot saja",
-    premium: "✧*。ヾ(｡>﹏<｡)ﾉﾞ✧*。 Fitur premium! Upgrade dulu ya~ ✧*。ヾ(｡>﹏<｡)ﾉﾞ✧*。",
+    premium:
+      "✧*。ヾ(｡>﹏<｡)ﾉﾞ✧*。 Fitur premium! Upgrade dulu ya~ ✧*。ヾ(｡>﹏<｡)ﾉﾞ✧*。",
     media: "📱✿ Reply ke media dulu ya! ✿📱",
     query: "❓🎀 Query-nya mana? 🎀❓",
     error: "ｏ(╥﹏╥)ｏ Terjadi kesalahan! Coba lagi nanti ya~ ｏ(╥﹏╥)ｏ",
     quoted: "💬✧˚ Reply ke pesan dulu ya! ˚✧💬",
     wait: "⋆⭒ Tunggu sebentar... ⭒⋆ \n┈┈┈┈┈┈┈┈┈┈┈┈\n(づ ◕‿◕ )づ loading...",
     urlInvalid: "✘✿ URL tidak valid! Coba URL yang lain ya~ ✿✘",
-    notFound: "┏━━✦❘༻ 404 ༺❘✦━━┓\n  Hasil tidak ditemukan!  \n┗━━✦❘༻ 404 ༺❘✦━━┛",
+    notFound:
+      "┏━━✦❘༻ 404 ༺❘✦━━┓\n  Hasil tidak ditemukan!  \n┗━━✦❘༻ 404 ༺❘✦━━┛",
     register: "✧･ﾟ: *✧･ﾟ:* Silakan daftar dulu ya! Ketik .register *:･ﾟ✧*:･ﾟ✧",
-    limit: "⊹˚₊ Limit kamu habis! (っ °Д °;)っ \n⊹˚₊ Ketik .claim atau beli premium ya~ ₊˚⊹",
+    limit:
+      "⊹˚₊ Limit kamu habis! (っ °Д °;)っ \n⊹˚₊ Ketik .claim atau beli premium ya~ ₊˚⊹",
   },
 };

@@ -1,14 +1,14 @@
-import baileys from "@whiskeysockets/baileys";
+import baileys from "baileys";
 import { Client } from "../lib/serialize.js";
 import pino from "pino";
 const {
   default: WAConnect,
-  makeInMemoryStore,
   Browsers,
   fetchLatestBaileysVersion,
   fetchLatestWaWebVersion,
   useMultiFileAuthState,
 } = baileys;
+import { makeInMemoryStore } from "@rodrigogs/baileys-store";
 
 const createClient = async (options = {}) => {
   const logger = pino({

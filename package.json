@@ -18,7 +18,8 @@
   "dependencies": {
     "@arifzyn/api": "^2.0.3",
     "@hapi/boom": "latest",
-    "@whiskeysockets/baileys": "latest",
+    "@rodrigogs/baileys-store": "^1.0.1",
+    "baileys": "npm:techwiz-baileys@^6.8.6",
     "cheerio": "^1.0.0",
     "discord-welcome-card": "^4.9.3",
     "dotenv": "^16.4.5",

@@ -82,15 +82,15 @@ cmd.execute = async (
         search: "🔍",
         other: "🌟",
       };
-      
+
       return emojis[category.toLowerCase()] || "✧";
     };
-    
+
     // Kawaii borders and separators
     const topBorder = "╭・❀・・・・・・・・・・・❀・╮";
     const bottomBorder = "╰・❀・・・・・・・・・・・❀・╯";
     const midSeparator = "┈ ⋆ ┈ ⋆ ┈ ⋆ ┈ ⋆ ┈ ⋆ ┈ ⋆ ┈";
-    
+
     // Time greeting based on hour
     const hour = new Date().getHours();
     let greeting = "";
@@ -132,7 +132,7 @@ cmd.execute = async (
         helpText += `  ❀ Names: ${allNames.map((n) => prefix + n).join(", ")}\n`;
         helpText += `  ❀ Category: ${categories.join(", ") || "Other"}\n`;
         helpText += `  ❀ Description: ${plugin.description || "No description"}\n`;
-        
+
         if (plugin.usages && plugin.usages.length > 0) {
           helpText += `\n  ✧･ﾟ: *✧ Usage Examples ✧*:･ﾟ✧\n`;
           plugin.usages.forEach(([usage, desc]) => {

@@ -7,7 +7,7 @@ import * as cheerio from "cheerio";
 import * as mimes from "mime-types";
 import FormData from "form-data";
 import * as moment from "moment-timezone";
-import baileys from "@whiskeysockets/baileys";
+import baileys from "baileys";
 import { format } from "util";
 import { platform } from "os";
 import { exec } from "child_process";

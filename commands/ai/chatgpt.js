@@ -28,8 +28,8 @@ async function callYanzGPT(messages) {
         model: "yanzgpt-revolution-25b-v3.5",
       },
     });
-    
-    console.log(JSON.stringify(response.data, null, 2))
+
+    console.log(JSON.stringify(response.data, null, 2));
 
     if (!response.data?.choices?.[0]?.message?.content) {
       throw new Error("Respons API tidak valid");

@@ -9,7 +9,7 @@ export default {
 
   execute: async function (m, { args, config }) {
     const basePath = `./${config.commands}`;
-    
+
     if (!args[0]) {
       let response = "📂 *Daftar Plugins:*\n\n";
 

@@ -1,4 +1,4 @@
-import baileys from "@whiskeysockets/baileys";
+import baileys from "baileys";
 import { drawCard, LinearGradient } from "discord-welcome-card";
 import { writeFileSync } from "fs";
 import { tmpdir } from "os";
@@ -6,7 +6,8 @@ import { join } from "path";
 
 const { jidNormalizedUser } = baileys;
 
-const bg_img = "https://raw.githubusercontent.com/Arifzyn19/Arifzyn19/refs/heads/main/media/313f0f3be163dff8128e0272663a08e8.jpg";
+const bg_img =
+  "https://raw.githubusercontent.com/Arifzyn19/Arifzyn19/refs/heads/main/media/313f0f3be163dff8128e0272663a08e8.jpg";
 
 const getProfilePic = async (jid, client) => {
   try {
@@ -91,7 +92,7 @@ export default (client, store) => {
             for (const participantId of participants) {
               const userName = await client.getName(participantId);
               const userPp = await getProfilePic(participantId, client);
-              
+
               const welcomeCard = await createWelcomeCard(
                 {
                   username: userName,
@@ -99,7 +100,7 @@ export default (client, store) => {
                 },
                 metadata.subject,
               );
-              
+
               await client.sendMessage(id, {
                 image: welcomeCard,
                 caption: `🌷 いらっしゃいませ 𝑰𝒓𝒂𝒔𝒔𝒉𝒂𝒊𝒎𝒂𝒔𝒆 (⁠｡⁠◕⁠‿⁠◕⁠｡⁠) 
@@ -127,7 +128,7 @@ export default (client, store) => {
             for (const participantId of participants) {
               const userName = await client.getName(participantId);
               const userPp = await getProfilePic(participantId, client);
-              
+
               const leaveCard = await createLeaveCard(
                 {
                   username: userName,
@@ -135,7 +136,7 @@ export default (client, store) => {
                 },
                 metadata.subject,
               );
-              
+
               await client.sendMessage(id, {
                 image: leaveCard,
                 caption:

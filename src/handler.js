@@ -4,7 +4,7 @@
  */
 
 import config from "./configs/config.js";
-import baileys from "@whiskeysockets/baileys";
+import baileys from "baileys";
 import Color from "./lib/color.js";
 import util from "util";
 
@@ -142,12 +142,18 @@ const handleMessagesUpsert = async (client, store, m, messages) => {
 
       try {
         if (typeof plugin.all === "function") {
-          await plugin.all.call(client, m, { messages, plugins, scrapers, API });
+          await plugin.all.call(client, m, {
+            messages,
+            plugins,
+            scrapers,
+            API,
+          });
         }
 
         if (typeof plugin.before === "function") {
           if (
             await plugin.before.call(client, m, {
+              client,
               messages,
               plugins,
               scrapers,
