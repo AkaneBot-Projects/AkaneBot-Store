@@ -94,8 +94,8 @@ export default {
 
           try {
             let media = await q.download();
-            let { data } = await Func.upload.arcdn(media);
-            imageUrl = data.url;
+            let { file } = await Func.upload.akncdn(media);
+            imageUrl = file.directUrl;
           } catch (error) {
             return m.reply(`❥ Failed to upload image: ${error.message}`);
           }
@@ -121,13 +121,13 @@ export default {
 
       case "dellist":
         if (!m.isAdmin) return m.reply("admin");
-        if (!args[0]) {
+        if (!m.text) {
           return m.reply(
             "❀ *Format Error* ❀\n\n❥ Format yang benar: /dellist key",
           );
         }
 
-        const keyToDelete = args[0];
+        const keyToDelete = m.text;
 
         if (!isAlreadyResponList(groupId, keyToDelete, db_store)) {
           return m.reply(

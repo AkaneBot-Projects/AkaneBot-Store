@@ -24,6 +24,7 @@ export default new (class Function {
     this.FormData = FormData;
     this.upload = {
       arcdn: this.arcdn.bind(this),
+      akncdn: this.akanecdn.bind(this),
       telegra: this.telegra.bind(this),
       pomf: this.pomf.bind(this),
       hari: this.hari.bind(this),
@@ -476,6 +477,32 @@ export default new (class Function {
         .then(({ data }) => resolve(data))
         .catch(reject);
     });
+  }
+  akanecdn(media) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const mime = await fileTypeFromBuffer(media)
+        const form = new FormData()
+
+        form.append('file', media, {
+          filename: `file-${Date.now()}.${mime.ext}`,
+          contentType: mime.mime,
+        })
+
+        const { data } = await axios.post('https://cdn.akane.web.id/upload', form, {
+          headers: {
+            'User-Agent':
+              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0',
+            Authorization: `Bearer ${process.env.UPLOAD_TOKEN}`,
+            ...form.getHeaders(),
+          },
+        })
+
+        resolve(data)
+      } catch (err) {
+        reject(err)
+      }
+    })
   }
   pomf(media) {
     return new Promise(async (resolve, reject) => {
