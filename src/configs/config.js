@@ -1,43 +1,62 @@
-import { config } from "dotenv";
-config();
+import { config } from "dotenv"
+config()
 
 export default {
-  owner: ["6285888362486", "6285691464024"], // isi
-  pairingNumber: "628195107972", // isi
-  self: false,
+  // Security: Move sensitive data to environment variables
+  owner: process.env.OWNER_NUMBERS?.split(",") || ["6285888362486", "6285691464024"],
+  pairingNumber: process.env.PAIRING_NUMBER || "628195107972",
+
+  // Bot behavior settings
+  self: process.env.SELF_MODE === "true" || false,
   autoRead: {
-    story: true,
-    storyEmoji: true,
-    message: false,
+    story: process.env.AUTO_READ_STORY === "true" || true,
+    storyEmoji: process.env.AUTO_READ_STORY_EMOJI === "true" || true,
+    message: process.env.AUTO_READ_MESSAGE === "true" || false,
   },
-  autoOnline: true,
-  storyReadInterval: 1000,
-  autoRestart: "350 MB",
-  writeStore: false,
+  autoOnline: process.env.AUTO_ONLINE === "true" || true,
+  storyReadInterval: Number.parseInt(process.env.STORY_READ_INTERVAL) || 1000,
+  autoRestart: process.env.AUTO_RESTART || "350 MB",
+  writeStore: process.env.WRITE_STORE === "true" || false,
+
+  // File paths
   session: process.env.SESSION || "./.session",
   database: process.env.DATABASE || "database.json",
-  mongoURi: process.env.MONGO_URi || "",
+  mongoURi: process.env.MONGO_URI || "",
   commands: "commands",
   scrapers: "scraper",
-  msg: {
-    owner: "✧˚ ༘ ⋆｡˚ Hanya owner yang bisa akses fitur ini! ˚♡ ⋆｡˚ ✧",
-    group: "✿°•∘ Fitur ini hanya untuk grup! ∘•°✿",
-    private: "💌✧˚・ Fitur khusus chat pribadi saja! ・˚✧💌",
-    admin: "👑✨ Khusus admin grup saja ya! ✨👑",
-    botAdmin: "🌸 Bot belum jadi admin, tidak bisa menggunakan fitur ini! 🌸",
-    bot: "🤖💕 Fitur ini hanya untuk bot saja",
-    premium:
-      "✧*。ヾ(｡>﹏<｡)ﾉﾞ✧*。 Fitur premium! Upgrade dulu ya~ ✧*。ヾ(｡>﹏<｡)ﾉﾞ✧*。",
-    media: "📱✿ Reply ke media dulu ya! ✿📱",
-    query: "❓🎀 Query-nya mana? 🎀❓",
-    error: "ｏ(╥﹏╥)ｏ Terjadi kesalahan! Coba lagi nanti ya~ ｏ(╥﹏╥)ｏ",
-    quoted: "💬✧˚ Reply ke pesan dulu ya! ˚✧💬",
-    wait: "⋆⭒ Tunggu sebentar... ⭒⋆ \n┈┈┈┈┈┈┈┈┈┈┈┈\n(づ ◕‿◕ )づ loading...",
-    urlInvalid: "✘✿ URL tidak valid! Coba URL yang lain ya~ ✿✘",
-    notFound:
-      "┏━━✦❘༻ 404 ༺❘✦━━┓\n  Hasil tidak ditemukan!  \n┗━━✦❘༻ 404 ༺❘✦━━┛",
-    register: "✧･ﾟ: *✧･ﾟ:* Silakan daftar dulu ya! Ketik .register *:･ﾟ✧*:･ﾟ✧",
-    limit:
-      "⊹˚₊ Limit kamu habis! (っ °Д °;)っ \n⊹˚₊ Ketik .claim atau beli premium ya~ ₊˚⊹",
+
+  messages: {
+    owner: "🔒 This feature is only accessible by the bot owner.",
+    group: "👥 This feature is only available in groups.",
+    private: "💬 This feature is only available in private chats.",
+    admin: "👑 This feature is only available for group admins.",
+    botAdmin: "🤖 Bot needs to be an admin to use this feature.",
+    bot: "🤖 This feature is only available for the bot.",
+    premium: "⭐ This is a premium feature. Please upgrade your account.",
+    media: "📱 Please reply to a media message.",
+    query: "❓ Please provide a query or parameter.",
+    error: "❌ An error occurred. Please try again later.",
+    quoted: "💬 Please reply to a message.",
+    wait: "⏳ Please wait, processing your request...",
+    urlInvalid: "🔗 Invalid URL provided. Please check and try again.",
+    notFound: "🔍 No results found for your query.",
+    register: "📝 Please register first by typing .register",
+    limit: "⚡ You've reached your usage limit. Type .claim or upgrade to premium.",
+    banned: "🚫 Your account has been banned from using this bot.",
+    cooldown: "⏰ Please wait before using this command again.",
+    maintenance: "🔧 This feature is currently under maintenance.",
   },
-};
+
+  performance: {
+    maxConcurrentCommands: Number.parseInt(process.env.MAX_CONCURRENT_COMMANDS) || 10,
+    commandCooldown: Number.parseInt(process.env.COMMAND_COOLDOWN) || 1000,
+    maxMessageLength: Number.parseInt(process.env.MAX_MESSAGE_LENGTH) || 4096,
+    databaseSaveInterval: Number.parseInt(process.env.DB_SAVE_INTERVAL) || 30000,
+  },
+
+  logging: {
+    level: process.env.LOG_LEVEL || "info",
+    saveToFile: process.env.SAVE_LOGS === "true" || false,
+    maxLogFiles: Number.parseInt(process.env.MAX_LOG_FILES) || 5,
+  },
+}

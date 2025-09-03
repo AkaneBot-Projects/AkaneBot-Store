@@ -97,7 +97,8 @@ export default {
             let { file } = await Func.upload.akncdn(media);
             imageUrl = file.directUrl;
           } catch (error) {
-            return m.reply(`❥ Failed to upload image: ${error.message}`);
+          	console.error(error)
+          	await m.reply(`❥ Failed to upload image: ${error.message}`);
           }
         }
 
@@ -177,8 +178,8 @@ export default {
 
           try {
             let media = await q.download();
-            let { data } = await Func.upload.arcdn(media);
-            newImageUrl = data.url;
+            let { file } = await Func.upload.akncdn(media);
+            newImageUrl = file.directUrl;
           } catch (error) {
             return m.reply(
               `❀ *Upload Error* ❀\n\n❥ Failed to upload image: ${error.message}`,
